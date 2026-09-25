@@ -9,6 +9,7 @@ urlpatterns = [
     # Web UI URLs
     path('', views.dashboard_view, name='dashboard'),
     path('accounts/login/', views.login_view, name='login'),
+    path('accounts/register/', views.register_view, name='register'),
     path('accounts/logout/', views.logout_view, name='logout'),
 
     # API URLs

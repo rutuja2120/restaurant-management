@@ -11,6 +11,31 @@ from .serializers import UserSerializer, UserRegistrationSerializer
 User = get_user_model()
 
 # Web Template Views
+def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        role = request.POST.get('role', User.Role.CUSTOMER)
+        phone_number = request.POST.get('phone_number', '')
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists. Please pick another.")
+        else:
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                role=role,
+                phone_number=phone_number
+            )
+            login(request, user)
+            messages.success(request, f"Account created! Welcome, {user.username}.")
+            return redirect('dashboard')
+    return render(request, 'accounts/register.html')
+
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard')

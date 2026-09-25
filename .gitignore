@@ -1,0 +1,42 @@
+# Python / Bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Django Runtime Files
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+
+# IDEs & OS Files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Docker & Build Artifacts
+*.tar
+*.gz
+dist/
+build/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/

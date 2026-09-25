@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: restaurant-config
+data:
+  DEBUG: "False"
+  DB_ENGINE: "postgresql"
+  POSTGRES_DB: "restaurant_db"
+  POSTGRES_USER: "postgres"
+  POSTGRES_HOST: "postgres-service"
+  POSTGRES_PORT: "5432"

@@ -1,0 +1,10 @@
+/* Custom CSS Adjustments */
+@media print {
+  nav, footer, button, a {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}

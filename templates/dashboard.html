@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | RestoManager{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+                Restaurant Executive Dashboard
+            </h1>
+            <p class="text-sm text-slate-400 mt-1">Real-time overview of floor seating, kitchen orders, and sales revenue.</p>
+        </div>
+        <div class="flex items-center space-x-3">
+            <a href="{% url 'order_create' %}" class="px-4 py-2.5 rounded-xl font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30 transition flex items-center space-x-2">
+                <i class="fa-solid fa-plus"></i>
+                <span>New Order</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Live Metrics Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Total Tables -->
+        <div class="p-6 rounded-2xl bg-slate-800/50 border border-slate-700/60 backdrop-blur-xl flex items-center justify-between shadow-xl">
+            <div>
+                <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Seating Tables</p>
+                <h3 class="text-3xl font-bold mt-1 text-white">{{ total_tables }}</h3>
+            </div>
+            <div class="p-3 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20 text-xl">
+                <i class="fa-solid fa-chair"></i>
+            </div>
+        </div>
+
+        <!-- Available Tables -->
+        <div class="p-6 rounded-2xl bg-slate-800/50 border border-slate-700/60 backdrop-blur-xl flex items-center justify-between shadow-xl">
+            <div>
+                <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Available Tables</p>
+                <h3 class="text-3xl font-bold mt-1 text-emerald-400">{{ available_tables }}</h3>
+            </div>
+            <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20 text-xl">
+                <i class="fa-solid fa-check-circle"></i>
+            </div>
+        </div>
+
+        <!-- Active Orders -->
+        <div class="p-6 rounded-2xl bg-slate-800/50 border border-slate-700/60 backdrop-blur-xl flex items-center justify-between shadow-xl">
+            <div>
+                <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Pending/Preparing Orders</p>
+                <h3 class="text-3xl font-bold mt-1 text-amber-400">{{ pending_orders }}</h3>
+            </div>
+            <div class="p-3 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20 text-xl">
+                <i class="fa-solid fa-fire"></i>
+            </div>
+        </div>
+
+        <!-- Total Revenue -->
+        <div class="p-6 rounded-2xl bg-slate-800/50 border border-slate-700/60 backdrop-blur-xl flex items-center justify-between shadow-xl">
+            <div>
+                <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Settled Revenue</p>
+                <h3 class="text-3xl font-bold mt-1 text-cyan-400">${{ total_revenue|floatformat:2 }}</h3>
+            </div>
+            <div class="p-3 bg-cyan-500/10 text-cyan-400 rounded-xl border border-cyan-500/20 text-xl">
+                <i class="fa-solid fa-sack-dollar"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Table -->
+    <div class="p-6 rounded-2xl bg-slate-800/40 border border-slate-700/50 backdrop-blur-xl shadow-xl space-y-4">
+        <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-slate-200">Recent Kitchen Orders</h2>
+            <a href="{% url 'order_list' %}" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300">View All &rarr;</a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-slate-700/60 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                        <th class="py-3 px-4">Order ID</th>
+                        <th class="py-3 px-4">Table</th>
+                        <th class="py-3 px-4">Status</th>
+                        <th class="py-3 px-4">Total</th>
+                        <th class="py-3 px-4">Placed At</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800 text-sm">
+                    {% for order in recent_orders %}
+                    <tr class="hover:bg-slate-800/30 transition">
+                        <td class="py-3 px-4 font-semibold text-indigo-400">#{{ order.id }}</td>
+                        <td class="py-3 px-4">Table {{ order.table.number }}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold
+                                {% if order.status == 'PENDING' %}bg-amber-500/10 text-amber-400 border border-amber-500/20
+                                {% elif order.status == 'PREPARING' %}bg-blue-500/10 text-blue-400 border border-blue-500/20
+                                {% elif order.status == 'SERVED' %}bg-purple-500/10 text-purple-400 border border-purple-500/20
+                                {% else %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20{% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 font-medium text-slate-200">${{ order.total_amount }}</td>
+                        <td class="py-3 px-4 text-slate-400 text-xs">{{ order.created_at|date:"H:i, d M" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="py-6 text-center text-slate-500">No recent orders found. Click 'New Order' to create one!</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

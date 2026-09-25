@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restaurant-system-deployment
+  labels:
+    app: restaurant-system
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: restaurant-system
+  template:
+    metadata:
+      labels:
+        app: restaurant-system
+    spec:
+      containers:
+      - name: restaurant-system
+        image: restaurant-system:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+        envFrom:
+        - configMapRef:
+            name: restaurant-config
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /accounts/login/
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /accounts/login/
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5

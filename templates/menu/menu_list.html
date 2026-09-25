@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Food & Drink Menu | RestoManager{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <div>
+        <h1 class="text-2xl font-bold text-white">Food & Drink Catalog</h1>
+        <p class="text-xs text-slate-400">Manage categories, menu pricing, and stock availability.</p>
+    </div>
+
+    {% for category in categories %}
+    <div class="space-y-4">
+        <h2 class="text-xl font-bold text-indigo-400 border-b border-slate-800 pb-2 flex items-center justify-between">
+            <span><i class="fa-solid fa-layer-group text-slate-500 mr-2 text-sm"></i> {{ category.name }}</span>
+            <span class="text-xs text-slate-500 font-normal">{{ category.description }}</span>
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for item in category.items.all %}
+            <div class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl flex flex-col justify-between space-y-3">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="font-bold text-white">{{ item.name }}</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">{{ item.description|default:"Chef recommendation" }}</p>
+                    </div>
+                    <span class="text-lg font-extrabold text-cyan-400">${{ item.price }}</span>
+                </div>
+
+                <div class="flex items-center justify-between pt-2 border-t border-slate-800">
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded {% if item.is_available %}bg-emerald-500/10 text-emerald-400{% else %}bg-rose-500/10 text-rose-400{% endif %}">
+                        {% if item.is_available %}Available{% else %}Out of Stock{% endif %}
+                    </span>
+
+                    <a href="{% url 'toggle_menu_item' pk=item.pk %}" class="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+                        Toggle Stock
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-xs text-slate-500 italic">No items in this category.</p>
+            {% endfor %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="py-12 text-center text-slate-500">
+        No menu categories present.
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

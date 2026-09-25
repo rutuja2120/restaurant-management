@@ -7,11 +7,26 @@ from rest_framework.response import Response
 from .models import Category, MenuItem
 from .serializers import CategorySerializer, MenuItemSerializer
 
+from django.db.models import Q
+
 # Web View
 @login_required
 def menu_list_view(request):
+    query = request.GET.get('q', '').strip()
+    max_price = request.GET.get('max_price', '').strip()
+
     categories = Category.objects.prefetch_related('items').all()
-    return render(request, 'menu/menu_list.html', {'categories': categories})
+
+    if query:
+        categories = categories.filter(
+            Q(name__icontains=query) | Q(items__name__icontains=query) | Q(items__description__icontains=query)
+        ).distinct()
+
+    return render(request, 'menu/menu_list.html', {
+        'categories': categories,
+        'query': query,
+        'max_price': max_price
+    })
 
 @login_required
 def toggle_item_availability_view(request, pk):
